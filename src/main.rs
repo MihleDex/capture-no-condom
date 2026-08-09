@@ -4,7 +4,7 @@ use std::net::{SocketAddr};
 
 fn main() {
     //Create socket
-    let socket = RawSocket::new(Domain::ipv4(), Type::stream(), Some(Protocol::tcp()));
+    let socket = RawSocket::new(Domain::ipv4(), Type::raw(), Some(Protocol::tcp()));
     
     let raw_socket = match socket {
         Ok(result) => result,
@@ -26,6 +26,18 @@ fn main() {
         }
     };
 
-    println!("Socket bound to: {}",addr)
+    println!("Socket bound to: {}",addr);
+
+    let mut buffer:[u8;8] = [0,0,0,0,0,0,0,0];
+
+    //Recieve data from Socket
+    let data = raw_socket.recv_from(&mut buffer);
+
+    let (bytes_recvd,src_addr) = match data {
+        Ok((bytes,src_addr)) => (bytes,src_addr),
+        Err(error) => {panic!("Error: {}",error)}
+    };
+
+    println!("Recieved: {} from: {}",bytes_recvd,src_addr);
     
 }
