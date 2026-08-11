@@ -1,3 +1,5 @@
+use std::net::Ipv4Addr;
+
 use raw_socket::{Domain, Protocol, RawSocket, Type};
 
 struct IPV4Header {
@@ -12,8 +14,8 @@ struct IPV4Header {
     time_to_live: u8,
     protocol:u8,
     header_checksum:u16,
-    source_address: u32,
-    destination_address:u32
+    source_address: Ipv4Addr,
+    destination_address:Ipv4Addr
 }
 
 fn build_header(buffer:[u8;58]) -> IPV4Header {
@@ -28,8 +30,8 @@ fn build_header(buffer:[u8;58]) -> IPV4Header {
     let time_to_live = buffer[8];
     let protocol = buffer[9];
     let header_checksum = u16::from_be_bytes([buffer[10],buffer[11]]);
-    let source_address = u32::from_be_bytes([buffer[12],buffer[13],buffer[14],buffer[15]]);
-    let destination_address = u32::from_be_bytes([buffer[16],buffer[17],buffer[18],buffer[19]]);
+    let source_address = Ipv4Addr::from([buffer[12],buffer[13],buffer[14],buffer[15]]);
+    let destination_address = Ipv4Addr::from([buffer[16],buffer[17],buffer[18],buffer[19]]);
     IPV4Header { version, ihl, dscp, ecn, total_length,identification, flags,fragment_offset,time_to_live,protocol,header_checksum,source_address,destination_address }
 }
 
@@ -66,7 +68,7 @@ fn main() {
     println!("identification: {:02x?}",header.identification);
     println!("flags: {:02x?}",header.flags);
     println!("fragment_offset: {:02x?}",header.fragment_offset);
-    println!("time_to_live: {:02x?}",header.time_to_live);
+    println!("time_to_live: {}",header.time_to_live);
     println!("protocol: {:02x?}",header.protocol);
     println!("header_checksum: {:02x?}",header.header_checksum);
     println!("source_address: {:02x?}",header.source_address);
